@@ -91,3 +91,71 @@ def test_can_purchase_item(balance, price, expected):
 def test_is_valid_item_type(item_type, expected):
     assert is_valid_item_type(item_type) is expected
 
+
+def can_afford(balance: int, price: int) -> bool:
+    if balance < 0:
+        raise ValueError("Balance can't be negative")
+    if price < 0:
+        raise ValueError("Price can't be negative")
+    return balance >= price
+
+
+def buy_item(balance: int, price: int) -> int:
+    if balance < 0:
+        raise ValueError("Balance can't be negative")
+    if price < 0:
+        raise ValueError("Price can't be negative")
+    if balance < price:
+        raise ValueError("Not enough money")
+    return balance - price
+
+
+def calculate_purchase_reward(price: int, bonus_percent: int) -> int:
+    if price < 0:
+        raise ValueError("Price can't be negative")
+    if bonus_percent < 0:
+        raise ValueError("Bonus_percent can't be negative")
+    base_reward = price // 10
+    bonus = base_reward * bonus_percent // 100
+    total_reward = base_reward + bonus
+    return total_reward
+
+def test_can_afford_return_true_when_balance_is_enough():
+    assert can_afford(100, 50) == True
+
+
+def test_can_afford_return_false_when_balance_is_not_enough():
+    assert can_afford(50, 100) == False
+
+
+def test_buy_item_return_update_balance():
+    assert buy_item(100, 50) == 50
+
+
+def test_calculate_reward_returns_total_reward():
+    assert calculate_purchase_reward(100, 50) == 15
+
+
+def test_can_afford_returns_false_when_balance_is_lower_then_price():
+    assert can_afford(49, 50) == False
+
+
+def test_can_afford_raises_error_for_negative_balance():
+    with pytest.raises(ValueError):
+        can_afford(-10,50)
+
+
+def test_can_afford_raises_error_for_negative_price():
+    with pytest.raises(ValueError):
+        can_afford(50,-10)
+
+
+def test_buy_item_raises_error_when_balance_is_not_enough():
+    with pytest.raises(ValueError):
+        buy_item(10, 50)
+
+
+def test_buy_item_raises_error_with_clear_message_for_negative_price():
+    with pytest.raises(ValueError, match="Price can't be negative"):
+        buy_item(10, -50)
+
