@@ -92,7 +92,7 @@ This single scenario is covered by:
 
 ---
 
-## ⚠️ Scope ограничения
+## ⚠️ Scope restrictions
 
 To keep the project focused and achievable:
 
