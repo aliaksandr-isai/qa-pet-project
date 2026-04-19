@@ -88,6 +88,6 @@ def test_can_purchase_item(balance, price, expected):
         ("", False),
     ],
 )
-def test_is_valid_item_type(valid_type, expected):
-    assert is_valid_item_type(valid_type) is expected
+def test_is_valid_item_type(item_type, expected):
+    assert is_valid_item_type(item_type) is expected
 
