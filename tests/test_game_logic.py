@@ -1,6 +1,7 @@
 import pytest
 from game.logic import (
     VALID_ITEM_TYPES,
+    ItemType,
     is_valid_item_type,
     can_start_quest,
     can_purchase_item,
@@ -29,6 +30,15 @@ def shop_item():
     }
 
 
+def test_valid_item_types_are_synced_with_item_type():
+    assert VALID_ITEM_TYPES == {
+        ItemType.WEAPON,
+        ItemType.ARMOR,
+        ItemType.CONSUMABLE,
+        ItemType.SKIN,
+    }
+
+
 def test_player_start_with_empty_inventory(sample_player):
     assert sample_player["inventory"] == []
 
@@ -45,6 +55,36 @@ def test_new_item_has_structure(shop_item):
     assert isinstance(shop_item["name"], str)
     assert isinstance(shop_item["type"], str)
     assert isinstance(shop_item["price"], int)
+
+
+@pytest.mark.parametrize(
+    "item_type, expected",
+    [
+        ("weapon", True),
+        ("armor", True),
+        ("consumable", True),
+        ("skin", True),
+        ("banana", False),
+        ("", False),
+        ("WEAPON", False),
+        ("  weapon  ", False),
+    ]
+)
+def test_is_valid_item_type_for_string_values(item_type, expected):
+    assert is_valid_item_type(item_type) is expected
+
+
+@pytest.mark.parametrize(
+    "item_type",
+    [
+        123,
+        None,
+        True,
+        False
+    ],
+)
+def test_is_valid_item_type_for_non_string_values(item_type):
+    assert is_valid_item_type(item_type) is False
 
 
 @pytest.mark.parametrize(
@@ -72,21 +112,6 @@ def test_can_purchase_item(balance, price, expected):
     assert can_purchase_item(balance, price) is expected
 
 
-@pytest.mark.parametrize(
-    "item_type, expected",
-    [
-        ("weapon", True),
-        ("armor", True),
-        ("consumable", True),
-        ("skin", True),
-        ("pet", False),
-        ("", False),
-    ],
-)
-def test_is_valid_item_type(item_type, expected):
-    assert is_valid_item_type(item_type) is expected
-
-
 def test_can_afford_return_true_when_balance_is_enough():
     assert can_afford(100, 50) is True
 
@@ -95,15 +120,15 @@ def test_can_afford_return_false_when_balance_is_not_enough():
     assert can_afford(50, 100) is False
 
 
-def test_buy_item_return_update_balance():
+def test_buy_item_returns_remaining_balance_after_purchase():
     assert buy_item(100, 50) == 50
 
 
-def test_calculate_reward_returns_total_reward():
+def test_calculate_reward_return_total_reward():
     assert calculate_purchase_reward(100, 50) == 15
 
 
-def test_can_afford_returns_false_when_balance_is_lower_than_price():
+def test_can_afford_return_false_when_balance_is_lower_than_price():
     assert can_afford(49, 50) is False
 
 
